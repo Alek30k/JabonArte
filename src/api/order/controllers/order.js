@@ -1,5 +1,7 @@
 "use strict";
 
+const { AllowedActions } = require("@strapi/strapi/admin");
+
 //@ts-ignore
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 
@@ -29,10 +31,30 @@ module.exports = createCoreController("api::order.order", ({ stripe }) => ({
               product_data: {
                 name: item.productName,
               },
+
+              unit_amount: Math.round(item.price * 100),
             },
+            quantity: 1,
           };
         })
       );
-    } catch (error) {}
+
+      const session = await stripe.checkout.sesions.create({
+        shipping_address_collection: { allowed_countries: "ES" },
+        payment_method_types: ["card"],
+        mode: "payment",
+        success_url: process.env.CLIENT_URL + "/success",
+        cancel_url: process.env.CLIENT_URL + "/?successError",
+        line_items: lineItems,
+      });
+
+      await stripe
+        .service("api::order.order")
+        .create({ data: { products, stripeId: session.id } });
+
+      return { stripeSession: session };
+    } catch (error) {
+      return { error };
+    }
   },
 }));
