@@ -42,10 +42,9 @@
     "origin": {
       "type": "enumeration",
       "enum": [
-        "África",
-        "América",
-        "Europa",
-        "Asia"
+        "Infantiles",
+        "Corporales",
+        "Faciales"
       ]
     },
     "taste": {

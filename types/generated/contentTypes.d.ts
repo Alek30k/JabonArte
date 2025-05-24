@@ -592,7 +592,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     origin: Schema.Attribute.Enumeration<
-      ['\u00C1frica', 'Am\u00E9rica', 'Europa', 'Asia']
+      ['Infantiles', 'Corporales', 'Faciales']
     >;
     price: Schema.Attribute.Decimal;
     productName: Schema.Attribute.String;
