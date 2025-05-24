@@ -1,37 +1,30 @@
 "use strict";
 
-const { AllowedActions } = require("@strapi/strapi/admin");
-
-//@ts-ignore
 const stripe = require("stripe")(process.env.STRIPE_KEY);
-
-/**
- * order controller
- */
 
 const { createCoreController } = require("@strapi/strapi").factories;
 
-// module.exports = createCoreController('api::order.order');
-module.exports = createCoreController("api::order.order", ({ stripe }) => ({
+module.exports = createCoreController("api::order.order", ({ strapi }) => ({
   async create(ctx) {
-    //@ts-ignore
-
     const { products } = ctx.request.body;
 
     try {
       const lineItems = await Promise.all(
         products.map(async (product) => {
-          const item = await stripe
+          const item = await strapi
             .service("api::product.product")
             .findOne(product.id);
 
+          if (!item) {
+            throw new Error(`Product with ID ${product.id} not found`);
+          }
+
           return {
             price_data: {
-              currency: "ARS",
+              currency: "USD",
               product_data: {
                 name: item.productName,
               },
-
               unit_amount: Math.round(item.price * 100),
             },
             quantity: 1,
@@ -39,8 +32,8 @@ module.exports = createCoreController("api::order.order", ({ stripe }) => ({
         })
       );
 
-      const session = await stripe.checkout.sesions.create({
-        shipping_address_collection: { allowed_countries: "ES" },
+      const session = await stripe.checkout.sessions.create({
+        shipping_address_collection: { allowed_countries: ["US"] },
         payment_method_types: ["card"],
         mode: "payment",
         success_url: process.env.CLIENT_URL + "/success",
@@ -48,13 +41,17 @@ module.exports = createCoreController("api::order.order", ({ stripe }) => ({
         line_items: lineItems,
       });
 
-      await stripe
-        .service("api::order.order")
-        .create({ data: { products, stripeId: session.id } });
+      await strapi.service("api::order.order").create({
+        data: { products, stripeId: session.id },
+      });
 
       return { stripeSession: session };
     } catch (error) {
-      return { error };
+      console.error("Error in order controller:", error);
+      ctx.response.status = 500;
+      return {
+        error: { message: "An error occurred while processing the order" },
+      };
     }
   },
 }));
