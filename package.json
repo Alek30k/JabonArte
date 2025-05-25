@@ -4,7 +4,7 @@
   "private": true,
   "description": "A Strapi application",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "strapi start",
     "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
