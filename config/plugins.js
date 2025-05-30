@@ -11,7 +11,11 @@ module.exports = ({ env }) => ({
         api_secret: env("CLOUDINARY_SECRET"),
       },
       actionOptions: {
-        upload: {},
+        upload: {
+          params: {
+            transformation: "q_auto,w_500", // Calidad automática y ancho máximo de 500px
+          },
+        },
         delete: {},
       },
     },
