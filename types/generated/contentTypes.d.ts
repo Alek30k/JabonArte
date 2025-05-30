@@ -586,7 +586,6 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       true
     >;
     isFeatured: Schema.Attribute.Boolean;
-    list: Schema.Attribute.Enumeration<['lo que tenes que saber']>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

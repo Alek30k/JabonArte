@@ -64,12 +64,6 @@
     },
     "features": {
       "type": "text"
-    },
-    "list": {
-      "type": "enumeration",
-      "enum": [
-        "lo que tenes que saber"
-      ]
     }
   }
 }
