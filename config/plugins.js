@@ -1,7 +1,4 @@
 module.exports = ({ env }) => ({
-  "strapi-neon-tech-db-branches": {
-    enabled: false,
-  },
   upload: {
     config: {
       provider: "cloudinary",
@@ -13,10 +10,11 @@ module.exports = ({ env }) => ({
       actionOptions: {
         upload: {
           params: {
-            transformation: "q_auto,w_500", // Calidad automática y ancho máximo de 500px
+            transformation: [
+              { quality: "auto", fetch_format: "auto", width: 500 }, // Optimiza calidad y ancho
+            ],
           },
         },
-        delete: {},
       },
     },
   },
